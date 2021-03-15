@@ -28,8 +28,7 @@ def onnx_export(model: nn.Module, fn: str):
                       verbose=True,
                       input_names=['input'], output_names=['output'],
                       export_params=True, opset_version=10)
-
-# SJH: This is related to this bug: https://github.com/pytorch/pytorch/issues/35516
+    # SJH: OpSet 10 is needed: https://github.com/pytorch/pytorch/issues/35516
                       # opset_version=12,
                       # do_constant_folding=True) # Try with 11
 

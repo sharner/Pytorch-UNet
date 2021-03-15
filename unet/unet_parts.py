@@ -55,28 +55,20 @@ class Up(nn.Module):
         else:
             self.up = nn.ConvTranspose2d(in_channels , in_channels // 2, kernel_size=2, stride=2)
             self.conv = DoubleConv(in_channels, out_channels)
-        # Replace the F.pad below with constant padding so TRT works
+        # Replace the F.pad below with constant padding so ONNX export works
         self.pad = nn.ConstantPad2d((0, 1, 0, 0), 0)
 
 
     def forward(self, x1, x2):
         x1 = self.up(x1)
         # input is CHW
-        # SJH: diffY, diffX are tensors; this fails in TRT because it only supports constant pads;
+        # SJH: diffY, diffX are tensors; this fails in ONNX export because it only supports constant pads;
         # so we make then constants
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
-        # print(diffX // 2, diffX - diffX // 2)
-        # print(diffY // 2, diffY - diffY // 2)
-
         # x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2,
         #                 diffY // 2, diffY - diffY // 2])
-
-        # x1 = F.pad(x1, [0, 1, 0, 0])
-        # print('Before', x1.size())
         x1 = self.pad(x1)
-        # print('After', x1.size())
-        # print('After x2', x2.size())
         # if you have padding issues, see
         # https://github.com/HaiyongJiang/U-Net-Pytorch-Unstructured-Buggy/commit/0e854509c2cea854e247a9c615f175f76fbb2e3a
         # https://github.com/xiaopeng-liao/Pytorch-UNet/commit/8ebac70e633bac59fc22bb5195e513d5832fb3bd
