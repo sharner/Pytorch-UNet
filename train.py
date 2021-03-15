@@ -16,9 +16,9 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.dataset import BasicDataset
 from torch.utils.data import DataLoader, random_split
 
-dir_img = 'data/imgs/'
-dir_mask = 'data/masks/'
-dir_checkpoint = 'checkpoints/'
+dir_img = '/data/train/'
+dir_mask = '/data/train_masks/'
+dir_checkpoint = '/data/checkpoints/'
 
 
 def train_net(net,
@@ -30,7 +30,7 @@ def train_net(net,
               save_cp=True,
               img_scale=0.5):
 
-    dataset = BasicDataset(dir_img, dir_mask, img_scale)
+    dataset = BasicDataset(dir_img, dir_mask, img_scale, '_mask')
     n_val = int(len(dataset) * val_percent)
     n_train = len(dataset) - n_val
     train, val = random_split(dataset, [n_train, n_val])

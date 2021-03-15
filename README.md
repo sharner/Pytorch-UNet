@@ -107,6 +107,47 @@ This assumes you use bilinear up-sampling, and not transposed convolution in the
 
 Personalized support for issues with this repository, or integrating with your own dataset, available on [xs:code](https://xscode.com/milesial/Pytorch-UNet).
 
+## SJH Notes
+
+Find notes on [Dense CRF here](https://github.com/grib0ed0v/unet.pytorch).  It is missing some of the new revisions.
+
+Build the container:
+
+```{sh}
+docker build -t pytorch-unet:latest .
+```
+
+Before training, follow the steps aboved to get the data from Kaggle. Update the path in `run_conatainer.sh` to mount the training set under `/data`. Run the container:
+
+```{sh}
+./run_container.sh
+```
+
+ Train the model using the example data:
+
+```{sh}
+cd /layerjot/Pytorch-UNet
+python train.py --epochs 10 --batch-size 1 --learning-rate 0.0001 --scale 0.5 --validation 10
+```
+
+Then test the model on real images:
+
+```{sh}
+python predict.py --model /checkpoints/CP_epoch1.pth  --input /data/test/6795f78ebbfa_12.jpg --output output.jpg
+```
+
+Convert to PyTorch to ONNX model
+
+```{sh}
+python export.py --model /data/checkpoints/CP_epoch1.pth
+```
+
+Convert ONNX to TRT
+
+```{sh}
+onnx2trt CP_epoch2.onnx -o CP_epoch2.plan -d 16
+```
+
 
 ---
 
